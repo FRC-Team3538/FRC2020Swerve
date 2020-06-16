@@ -8,9 +8,16 @@
 #pragma once
 
 #include <frc/TimedRobot.h>
+#include "Robotmap.hpp"
 
-class Robot : public frc::TimedRobot {
- public:
+class Robot : public frc::TimedRobot
+{
+private:
+  Robotmap IO;
+
+  double deadband(double input, double deadband);
+
+public:
   void RobotInit() override;
 
   void AutonomousInit() override;

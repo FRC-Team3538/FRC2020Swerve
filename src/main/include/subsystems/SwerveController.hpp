@@ -23,6 +23,8 @@ private:
         blRotate
     };
 
+    const double poleDeadband = 4.0 * (Constants::pi / 180.0);// Radians
+
     SwerveModule frontRight{'0', motorID::frRotate, motorID::frDrive, Constants::frontRight, 0.0};
     SwerveModule frontLeft{'1', motorID::flRotate, motorID::flDrive, Constants::frontLeft, 0.0};
     SwerveModule backRight{'2', motorID::brRotate, motorID::brDrive, Constants::backRight, 0.0};
@@ -33,7 +35,7 @@ private:
 
     PigeonIMU pigeotto{8};
 
-    void Controller();
+    double deadbandPoles(double input);
 
 public:
     SwerveController();

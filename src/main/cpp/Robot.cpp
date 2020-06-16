@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "Robot.h"
+#include "Robot.hpp"
 
 void Robot::RobotInit() {}
 
@@ -13,11 +13,41 @@ void Robot::AutonomousInit() {}
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {}
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic()
+{
+    double forward = deadband(IO.ds.Driver.GetY(GenericHID::kLeftHand) * -1.0, 0.05);
+    double strafe = deadband(IO.ds.Driver.GetX(GenericHID::kLeftHand) * -1.0, 0.05);
+    double rotate = deadband(IO.ds.Driver.GetX(GenericHID::kRightHand) * -1.0, 0.05);
+
+    IO.SC.SwerveDrive(strafe, forward, rotate, true);
+}
 
 void Robot::TestInit() {}
 void Robot::TestPeriodic() {}
 
+double Robot::deadband(double input, double deadband)
+{
+    if ((std::abs(input)) < deadband)
+    {
+        return 0.0;
+    }
+    else if (input > 0.95)
+    {
+        return 1.0;
+    }
+    else if (input < -0.95)
+    {
+        return -1.0;
+    }
+    else
+    {
+        return input;
+    }
+}
+
 #ifndef RUNNING_FRC_TESTS
-int main() { return frc::StartRobot<Robot>(); }
+int main()
+{
+    return frc::StartRobot<Robot>();
+}
 #endif

@@ -2,6 +2,7 @@
 
 SwerveController::SwerveController()
 {
+    ConfigureMotors();
 }
 
 /**
@@ -15,15 +16,18 @@ SwerveController::SwerveController()
 void SwerveController::SwerveDrive(double x, double y, double rotate, bool fieldCentric)
 {
     double r = sqrt(pow(x, 2) + pow(y, 2));
-    double theta = atan(y / x); //Radians
+    double theta = atan(y / x); // Radians
 
-    //Scale the magnitude of the polar graph in order to preserve the angle
+    // Snap to poles if within deadband
+    theta = deadbandPoles(theta);
+
+    // Scale the magnitude of the polar graph in order to preserve the angle
     double scaledR = pow(r, 3);
 
     x = scaledR * cos(theta);
     y = scaledR * sin(theta);
 
-    //Convert to field-centric inputs if using field-centric control
+    // Convert to field-centric inputs if using field-centric control
     if(fieldCentric)
     {
         double temp = (y * cos(GetAngle())) + (x * sin(GetAngle()));
@@ -31,121 +35,57 @@ void SwerveController::SwerveDrive(double x, double y, double rotate, bool field
         y = temp;
     }
 
-    //Calculate swerve commands based on inputs
+    // Calculate swerve commands based on inputs
     SK.Calculate(x, y, rotate);
     motorVals = SK.GetKinematics();
 
-    //Find most efficient command to send to modules
-    Controller();
-
-    //Send command to modules
-    frontRight.setModule(motorVals[0][0]);
-    frontRight.setModuleAngle(motorVals[0][1]);
-    frontLeft.setModule(motorVals[1][0]);
-    frontLeft.setModuleAngle(motorVals[1][1]);
-    backRight.setModule(motorVals[2][0]);
-    backRight.setModuleAngle(motorVals[2][1]);
-    backLeft.setModule(motorVals[3][0]);
-    backLeft.setModuleAngle(motorVals[3][1]);
+    // Send command to modules
+    frontRight.setModule(motorVals[0][1], motorVals[0][0]);
+    frontLeft.setModule(motorVals[1][1], motorVals[1][0]);
+    backRight.setModule(motorVals[2][1], motorVals[2][0]);
+    backLeft.setModule(motorVals[3][1], motorVals[3][0]);
 }
 
 /**
- * This is a function to find the most
- * efficient command to send a module
+ * Returns robot angle heading
+ * 
+ * @return angle of robot -180 ~ 180
  */ 
-void SwerveController::Controller()
-{
-    double errFR = frontRight.getModuleAngle() - motorVals[0][1];
-    double errFL = frontLeft.getModuleAngle() - motorVals[1][1];
-    double errBR = backRight.getModuleAngle() - motorVals[2][1];
-    double errBL = backLeft.getModuleAngle() - motorVals[3][1];
-
-    if (errFR > 180.0)
-        errFR -= 360.0;
-    if (errFR < -180.0)
-        errFR += 360.0;
-
-    if (errFL > 180.0)
-        errFL -= 360.0;
-    if (errFL < -180.0)
-        errFL += 360.0;
-
-    if (errBR > 180.0)
-        errBR -= 360.0;
-    if (errBR < -180.0)
-        errBR += 360.0;
-
-    if (errBL > 180.0)
-        errBL -= 360.0;
-    if (errBL < -180.0)
-        errBL += 360.0;
-
-    /**
-     * Ether's Swerve math only accounts for the module going forward
-     * Thus, if the module must turn more than 90 deg to hit its setpoint,
-     * We can reverse motor directionality and change the setpoint by 180 deg
-     * To achieve a faster, more efficient rotation
-     */
-    if (abs(errFR) > 90.0)
-    {
-        motorVals[0][0] = -motorVals[0][0];
-
-        if (motorVals[0][1] > 0.0)
-        {
-            motorVals[0][1] -= 180.0;
-        }
-        else
-        {
-            motorVals[0][1] += 180.0;
-        }
-    }
-
-    if (abs(errFL) > 90.0)
-    {
-        motorVals[1][0] = -motorVals[1][0];
-
-        if (motorVals[1][1] > 0.0)
-        {
-            motorVals[1][1] -= 180.0;
-        }
-        else
-        {
-            motorVals[1][1] += 180.0;
-        }
-    }
-
-    if (abs(errBR) > 90.0)
-    {
-        motorVals[2][0] = -motorVals[2][0];
-
-        if (motorVals[2][1] > 0.0)
-        {
-            motorVals[2][1] -= 180.0;
-        }
-        else
-        {
-            motorVals[2][1] += 180.0;
-        }
-    }
-
-    if (abs(errBL) > 90.0)
-    {
-        motorVals[3][0] = -motorVals[3][0];
-
-        if (motorVals[3][1] > 0.0)
-        {
-            motorVals[3][1] -= 180.0;
-        }
-        else
-        {
-            motorVals[3][1] += 180.0;
-        }
-    }
-}
-
 double SwerveController::GetAngle()
 {
     return pigeotto.GetFusedHeading();
+}
+
+/**
+ * Tests for proximity to poles (0, pi/2, pi, 3pi/2)
+ * and if within deadband, snaps it to the pole
+ * 
+ * @param input angle in radians
+ * @return input angle, or pole if close enough
+ */ 
+double SwerveController::deadbandPoles(double input)
+{
+    double temp = input;
+    input %= 360.0;
+
+    if(abs(input - ((3* Constants::pi) / 2)) < poleDeadband)
+    {
+        return ((3* Constants::pi) / 2);
+    }
+    else if(abs(input - Constants::pi) < poleDeadband)
+    {
+        return Constants::pi;
+    }
+    else if(abs(input - (Constants::pi / 2)) < poleDeadband)
+    {
+        return (Constants::pi / 2);
+    }
+    else
+    {
+        return temp;
+    }
+    
+
 }
 
 void SwerveController::UpdateTelemetry()

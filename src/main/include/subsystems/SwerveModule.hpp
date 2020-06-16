@@ -3,7 +3,7 @@
 #include "Subsystem.hpp"
 #include "lib/Vector2d.hpp"
 #include "lib/LazyTalonFX.hpp"
-#include <rev/CANSparkMax.h>
+#include "lib/LazySparkMax.hpp"
 
 using namespace std;
 using namespace frc;
@@ -16,8 +16,16 @@ private:
     char moduleID;
     const Vector2d& position;
     LazyTalonFX driveMotor;
-    CANSparkMax rotationMotor;
+    LazySparkMax rotationMotor;
     double encOffset;
+
+    static const double kP = 0.035;
+    static const double kI = 0.00001;
+    static const double kD = 0.02;
+    static const double kIz = 10.0; // Degrees
+
+    double iAcc = 0.0;
+    double prevErr = 0.0;
 
 public:
     SwerveModule &operator=(SwerveModule const &);   
@@ -27,7 +35,7 @@ public:
     void UpdateTelemetry();
 
     double getModuleAngle();
-    void setModuleAngle(double target);
-    void setModule(double input);
+    void setModule(double angle, double power);
+    void setModuleAngleRel(double target);
     bool angleOnTarget();
 };
