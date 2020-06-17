@@ -66,7 +66,7 @@ double SwerveController::GetAngle()
 double SwerveController::deadbandPoles(double input)
 {
     double temp = input;
-    input %= 360.0;
+    input = fmod(input, 360.0);
 
     if(abs(input - ((3* Constants::pi) / 2)) < poleDeadband)
     {

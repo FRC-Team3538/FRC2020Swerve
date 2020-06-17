@@ -19,13 +19,17 @@ private:
     LazySparkMax rotationMotor;
     double encOffset;
 
-    static const double kP = 0.035;
-    static const double kI = 0.00001;
-    static const double kD = 0.02;
-    static const double kIz = 10.0; // Degrees
+    static constexpr double kP = 0.035;
+    static constexpr double kI = 0.00001;
+    static constexpr double kD = 0.02;
+    static constexpr double kIz = 10.0; // Degrees
+
+    static constexpr double angleTol = 3.0; // Degrees
 
     double iAcc = 0.0;
     double prevErr = 0.0;
+
+    double angleTarget = 0.0;
 
 public:
     SwerveModule &operator=(SwerveModule const &);   

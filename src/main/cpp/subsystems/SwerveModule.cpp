@@ -53,17 +53,18 @@ void SwerveModule::setModule(double angle, double power)
     {
         power = -power;
 
-        if (angle > 0.0)
+        if (err > 0.0)
         {
-            angle -= 180.0;
+            err -= 180.0;
         }
         else
         {
-            angle += 180.0;
+            err += 180.0;
         }
     }
 
     driveMotor._Set(ControlMode::PercentOutput, power);
+    setModuleAngleRel(err);
 }
 
 /**
@@ -73,6 +74,8 @@ void SwerveModule::setModule(double angle, double power)
  */ 
 void SwerveModule::setModuleAngleRel(double target)
 {
+    angleTarget += target;
+
     double d_error = target - prevErr;
     prevErr = target;
 
@@ -96,7 +99,8 @@ void SwerveModule::setModuleAngleRel(double target)
  */
 bool SwerveModule::angleOnTarget()
 {
-    return false;
+    bool onTarget = abs(angleTarget - getModuleAngle()) < angleTol;
+    return onTarget;
 }
 
 void SwerveModule::ConfigureMotors()

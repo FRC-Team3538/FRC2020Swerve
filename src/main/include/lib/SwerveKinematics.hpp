@@ -14,6 +14,8 @@ private:
             {0.0, 0.0}};
 
 public:
+    // Yes, I did create a custom data type in order to return a 2d array rather
+    // than requiring an input array that I could just edit
     typedef double (*twoDArr)[2];
 
     SwerveKinematics() {}
@@ -71,7 +73,8 @@ public:
     /**
      * Get results of Calculate() function
      * 
-     * @return wheelVals is a 2d array with the following format:{frSpd, frAng}, {flSpd, frAng}, {brSpd, brAng}, {blSpd, brAng}
+     * @return wheelVals is a 2d array with the following format:
+     *         {frSpd, frAng}, {flSpd, frAng}, {brSpd, brAng}, {blSpd, brAng}
      */
     twoDArr GetKinematics()
     {

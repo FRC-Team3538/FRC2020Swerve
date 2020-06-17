@@ -8,4 +8,5 @@ class Robotmap
     public:
     SwerveController SC;
     DS ds;
-}
+
+};
