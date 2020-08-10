@@ -9,15 +9,31 @@
 
 void Robot::RobotInit() {}
 
+void Robot::RobotPeriodic()
+{
+    IO.SC.UpdateTelemetry();
+}
+
+void Robot::DisabledPeriodic()
+{
+    IO.SC.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+}
+
 void Robot::AutonomousInit() {}
 void Robot::AutonomousPeriodic() {}
 
-void Robot::TeleopInit() {}
+void Robot::TeleopInit()
+{
+    IO.SC.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+}
+
 void Robot::TeleopPeriodic()
 {
-    double forward = deadband(IO.ds.Driver.GetY(GenericHID::kLeftHand) * -1.0, 0.05);
-    double strafe = deadband(IO.ds.Driver.GetX(GenericHID::kLeftHand) * -1.0, 0.05);
-    double rotate = deadband(IO.ds.Driver.GetX(GenericHID::kRightHand) * -1.0, 0.05);
+    double forward = deadband(IO.ds.Driver.GetY(GenericHID::kLeftHand), 0.05);
+    double strafe = deadband(IO.ds.Driver.GetX(GenericHID::kLeftHand), 0.05);
+    double rotate = deadband(IO.ds.Driver.GetX(GenericHID::kRightHand), 0.05);
+
+    //IO.SC.TestSteering(strafe, forward);
 
     IO.SC.SwerveDrive(strafe, forward, rotate, true);
 }

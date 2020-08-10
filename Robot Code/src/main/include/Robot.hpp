@@ -18,7 +18,11 @@ private:
   double deadband(double input, double deadband);
 
 public:
+
   void RobotInit() override;
+  void RobotPeriodic() override;
+
+  void DisabledPeriodic() override;
 
   void AutonomousInit() override;
   void AutonomousPeriodic() override;

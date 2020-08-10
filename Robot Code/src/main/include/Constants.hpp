@@ -8,13 +8,13 @@ using namespace std;
 namespace Constants
 {
 
-//Global Constants
-const double pi = atan(1) * 4;
+// Global Constants
+const double pi = M_PI;
 
-//Drivetrain Constants (Assuming Rectangular)
-const double trackWidth = 24.0; //Inches
-const double wheelBase = 24.0;  //Inches
-const double diagonal = sqrt(pow(trackWidth, 2) + pow(wheelBase, 2));
+// Drivetrain Constants (Assuming Rectangular)
+const double trackWidth = 22.25; // Inches
+const double wheelBase = 22.25;  // Inches
+const double diagonal = sqrt(pow(trackWidth, 2) + pow(wheelBase, 2)); // Inches
 
 const Vector2d frontRight{(trackWidth / 2), (wheelBase / 2)};
 const Vector2d frontLeft{-(trackWidth / 2), (wheelBase / 2)};
