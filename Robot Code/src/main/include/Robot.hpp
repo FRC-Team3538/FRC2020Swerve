@@ -9,6 +9,8 @@
 
 #include <frc/TimedRobot.h>
 #include "Robotmap.hpp"
+#include "lib/Configuration.hpp"
+#include "config/TestConfig.hpp"
 
 class Robot : public frc::TimedRobot
 {

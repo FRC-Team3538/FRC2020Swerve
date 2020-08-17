@@ -7,7 +7,10 @@
 
 #include "Robot.hpp"
 
-void Robot::RobotInit() {}
+void Robot::RobotInit() {
+    Configuration c;
+    auto t = c.template Get<TestConfig>("testConfig.json");
+}
 
 void Robot::RobotPeriodic()
 {
