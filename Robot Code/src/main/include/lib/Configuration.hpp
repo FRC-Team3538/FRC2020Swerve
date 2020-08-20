@@ -32,4 +32,43 @@ public:
         
         throw errno;
     }
+
+    template<typename T>
+    T TryGet(std::string file) {
+        try {
+            return Get<T>(file);
+        } catch (int i) {
+            wpi::outs() << "Error while reading " << file << ": " << strerror(i) << "\n";
+        } catch (nlohmann::detail::exception e) {
+            wpi::outs() << "Error while reading " << file << ": " << e.what() << "\n";
+        }
+
+        T alt;
+        return alt;
+    }
+
+    template<typename T>
+    void Put(std::string file, T data) {
+        ofstream json_file(get_path() + file);
+        if (json_file.is_open()) {
+            std::string contents;
+            nlohmann::json j = data;
+            json_file << j.dump(4);
+            json_file.close();
+            return;
+        }
+        
+        throw errno;
+    }
+
+    template<typename T>
+    void TryPut(std::string file, T data) {
+        try {
+            Put<T>(file, data);
+        } catch (int i) {
+            wpi::outs() << "Error while writing to " << file << ": " << strerror(i) << "\n";
+        } catch (nlohmann::detail::exception e) {
+            wpi::outs() << "Error while writing to " << file << ": " << e.what() << "\n";
+        }
+    }
 };

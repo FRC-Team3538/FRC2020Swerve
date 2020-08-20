@@ -1,3 +1,9 @@
 {
-    "a": 1
+    "a": 2,
+    "cpc": {
+        "customParam0": 3,
+        "customParam1": 4,
+        "enableOptimizations": true
+    },
+    "fx": null
 }
